@@ -1,8 +1,8 @@
 import { createClient } from '@/lib/supabase/server';
 import { redirect } from 'next/navigation';
 import Link from 'next/link';
+import '../../styles/dashboard.css';
 
-// A server component to handle logout
 async function LogoutButton() {
   const logout = async () => {
     'use server';
@@ -10,10 +10,9 @@ async function LogoutButton() {
     await supabase.auth.signOut();
     redirect('/login');
   };
-
   return (
     <form action={logout}>
-      <button type="submit">Logout</button>
+      <button type="submit" style={{background:'#ef4444',color:'#fff',border:'none',borderRadius:8,padding:'0.5rem 1.2rem',fontWeight:600,cursor:'pointer'}}>Logout</button>
     </form>
   );
 }
@@ -24,33 +23,33 @@ export default async function DashboardLayout({
   children: React.ReactNode;
 }) {
   const supabase = createClient();
-
   const {
     data: { user },
   } = await supabase.auth.getUser();
-
   if (!user) {
     redirect('/login');
   }
-
+  // Get current path for active nav
+  let currentPath = '';
+  if (typeof window !== 'undefined') {
+    currentPath = window.location.pathname;
+  }
   return (
-    <div style={{ display: 'flex', height: '100vh' }}>
-      <aside style={{ width: '200px', borderRight: '1px solid #ccc', padding: '1rem' }}>
-        <h3>Menu</h3>
-        <nav style={{ display: 'flex', flexDirection: 'column' }}>
-          <Link href="/members">Members</Link>
-          <Link href="/tasks">Tasks</Link>
-          <Link href="/schedules">Schedules</Link>
-          <Link href="/analytics">Analytics</Link>
+    <div className="dashboard-container">
+      <aside className="dashboard-sidebar">
+        <h3>Family Routine</h3>
+        <nav>
+          <Link href="/members" className={currentPath.includes('/members') ? 'active' : ''}>Members</Link>
+          <Link href="/tasks" className={currentPath.includes('/tasks') ? 'active' : ''}>Tasks</Link>
+          <Link href="/schedules" className={currentPath.includes('/schedules') ? 'active' : ''}>Schedules</Link>
+          <Link href="/analytics" className={currentPath.includes('/analytics') ? 'active' : ''}>Analytics</Link>
         </nav>
-        <div style={{ marginTop: 'auto' }}>
+        <div className="sidebar-footer">
           <p>Welcome, {user.email}</p>
           <LogoutButton />
         </div>
       </aside>
-      <main style={{ flex: 1, padding: '1rem' }}>
-        {children}
-      </main>
+      <main className="dashboard-main">{children}</main>
     </div>
   );
 }

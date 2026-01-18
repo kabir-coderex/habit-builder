@@ -1,0 +1,93 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+
+:root {
+  --primary: #2563eb;
+  --primary-light: #3b82f6;
+  --primary-dark: #1e40af;
+  --background: #f8fafc;
+  --surface: #fff;
+  --border: #e5e7eb;
+  --text: #1e293b;
+  --text-light: #64748b;
+  --success: #22c55e;
+  --danger: #ef4444;
+  --radius: 12px;
+  --shadow: 0 2px 8px rgba(0,0,0,0.04);
+}
+
+html, body {
+  font-family: 'Inter', sans-serif;
+  background: var(--background);
+  color: var(--text);
+  margin: 0;
+  padding: 0;
+}
+
+.dashboard-container {
+  display: flex;
+  height: 100vh;
+}
+
+.dashboard-sidebar {
+  width: 240px;
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  padding: 2rem 1.5rem 1.5rem 1.5rem;
+  box-shadow: var(--shadow);
+}
+
+.dashboard-sidebar h3 {
+  margin-top: 0;
+  margin-bottom: 2rem;
+  font-weight: 700;
+  color: var(--primary);
+}
+
+.dashboard-sidebar nav {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+}
+
+.dashboard-sidebar nav a {
+  color: var(--text-light);
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 1.1rem;
+  border-radius: var(--radius);
+  padding: 0.5rem 1rem;
+  transition: background 0.15s, color 0.15s;
+}
+
+.dashboard-sidebar nav a.active,
+.dashboard-sidebar nav a:hover {
+  background: var(--primary-light);
+  color: #fff;
+}
+
+.dashboard-sidebar .sidebar-footer {
+  margin-top: auto;
+  padding-top: 2rem;
+  border-top: 1px solid var(--border);
+  color: var(--text-light);
+  font-size: 0.95rem;
+}
+
+.dashboard-main {
+  flex: 1;
+  padding: 2.5rem 3rem;
+  background: var(--background);
+  overflow-y: auto;
+}
+
+@media (max-width: 900px) {
+  .dashboard-sidebar {
+    width: 100px;
+    padding: 1rem 0.5rem;
+  }
+  .dashboard-main {
+    padding: 1.5rem 1rem;
+  }
+}
