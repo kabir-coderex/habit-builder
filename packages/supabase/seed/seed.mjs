@@ -1,5 +1,12 @@
 import { createClient } from '@supabase/supabase-js';
-import 'dotenv/config';
+import dotenv from 'dotenv';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+// --- Configure dotenv to find the root .env file ---
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+dotenv.config({ path: path.resolve(__dirname, '../../../.env') });
 
 // --- Configuration ---
 // Load environment variables from the root .env file
@@ -70,14 +77,33 @@ async function seedDatabase() {
 
     // 2. Create the Guardian Admin Auth User
     console.log(`Creating admin auth user for ${adminEmail}...`);
-    const { data: authUser, error: authError } = await supabase.auth.admin.createUser({
-      email: adminEmail,
-      password: adminPassword,
-      email_confirm: true, // Auto-confirm the email for the admin
+    // Upsert admin user: if exists, update password; else, create
+    let authUser, authError;
+    // Try to find existing user
+    const { data: existingUser, error: findError } = await supabase.auth.admin.listUsers({
+      email: adminEmail
     });
-
-    if (authError) throw authError;
-    console.log(`Admin auth user created with ID: ${authUser.user.id}`);
+    if (findError) throw findError;
+    if (existingUser && existingUser.users && existingUser.users.length > 0) {
+      // User exists, update password
+      const userId = existingUser.users[0].id;
+      const { data: updatedUser, error: updateError } = await supabase.auth.admin.updateUserById(userId, {
+        password: adminPassword
+      });
+      if (updateError) throw updateError;
+      authUser = { user: updatedUser.user };
+      console.log(`Admin auth user password updated for ID: ${userId}`);
+    } else {
+      // User does not exist, create
+      const { data: newUser, error: createError } = await supabase.auth.admin.createUser({
+        email: adminEmail,
+        password: adminPassword,
+        email_confirm: true,
+      });
+      if (createError) throw createError;
+      authUser = { user: newUser.user };
+      console.log(`Admin auth user created with ID: ${authUser.user.id}`);
+    }
 
     // 3. Create the corresponding Guardian Member profile
     console.log('Creating guardian member profile...');
@@ -93,7 +119,9 @@ async function seedDatabase() {
 
     // 4. Insert Predefined Tasks
     console.log('Inserting predefined tasks...');
-    const { error: tasksError } = await supabase.from('predefined_tasks').upsert(predefinedTasks);
+    const { error: tasksError } = await supabase
+      .from('predefined_tasks')
+      .upsert(predefinedTasks, { onConflict: ['name'] });
 
     if (tasksError) throw tasksError;
     console.log(`${predefinedTasks.length} predefined tasks inserted/updated successfully.`);
