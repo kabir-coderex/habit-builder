@@ -1,0 +1,13 @@
+{
+  "name": "supabase-seed",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "seed": "node seed/seed.mjs"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.90.1",
+    "dotenv": "^16.4.1"
+  }
+}

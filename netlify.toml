@@ -1,0 +1,20 @@
+# This file provides the base configuration for deploying a Next.js app from the monorepo.
+# These settings will be customized in the Netlify UI for each specific site (Dashboard and PWA).
+
+[build]
+  # Command to build a specific application in the monorepo.
+  # The --filter flag will be changed in the Netlify UI for each site.
+  command = "pnpm run build --filter=guardian-dashboard"
+
+  # The directory where the built Next.js application is located.
+  # The path is relative to the package directory (e.g., apps/guardian-dashboard/.next).
+  publish = ".next"
+
+  # The root directory of the application to be built, relative to the base of the repository.
+  # This will also be changed in the Netlify UI for each site.
+  base = "apps/guardian-dashboard"
+
+# The Netlify Next.js plugin is essential for enabling server-side features,
+# middleware, and other advanced functionalities on Netlify's platform.
+[[plugins]]
+  package = "@netlify/plugin-nextjs"
