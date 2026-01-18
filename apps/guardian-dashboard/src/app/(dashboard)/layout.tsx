@@ -1,55 +1,99 @@
-import { createClient } from '@/lib/supabase/server';
-import { redirect } from 'next/navigation';
+'use client';
+
+import { useEffect, useState } from 'react';
+import { createClient } from '@/lib/supabase/client';
+import { useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
-import '../../styles/dashboard.css';
+import styles from './dashboard.module.scss';
 
-async function LogoutButton() {
-  const logout = async () => {
-    'use server';
-    const supabase = createClient();
-    await supabase.auth.signOut();
-    redirect('/login');
-  };
-  return (
-    <form action={logout}>
-      <button type="submit" style={{background:'#ef4444',color:'#fff',border:'none',borderRadius:8,padding:'0.5rem 1.2rem',fontWeight:600,cursor:'pointer'}}>Logout</button>
-    </form>
-  );
-}
-
-export default async function DashboardLayout({
+export default function DashboardLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const [user, setUser] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
   const supabase = createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) {
-    redirect('/login');
+  const router = useRouter();
+  const pathname = usePathname();
+
+  useEffect(() => {
+    const checkUser = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        router.push('/login');
+      } else {
+        setUser(user);
+        setLoading(false);
+      }
+    };
+    checkUser();
+  }, []);
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    router.push('/login');
+  };
+
+  if (loading) {
+    return (
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh' }}>
+        Loading...
+      </div>
+    );
   }
-  // Get current path for active nav
-  let currentPath = '';
-  if (typeof window !== 'undefined') {
-    currentPath = window.location.pathname;
-  }
+
   return (
-    <div className="dashboard-container">
-      <aside className="dashboard-sidebar">
-        <h3>Family Routine</h3>
-        <nav>
-          <Link href="/members" className={currentPath.includes('/members') ? 'active' : ''}>Members</Link>
-          <Link href="/tasks" className={currentPath.includes('/tasks') ? 'active' : ''}>Tasks</Link>
-          <Link href="/schedules" className={currentPath.includes('/schedules') ? 'active' : ''}>Schedules</Link>
-          <Link href="/analytics" className={currentPath.includes('/analytics') ? 'active' : ''}>Analytics</Link>
+    <div className={styles.container}>
+      <aside className={styles.sidebar}>
+        <div className={styles.logo}>
+          <h2>🏠 Family Routine</h2>
+        </div>
+        <nav className={styles.nav}>
+          <Link 
+            href="/members" 
+            className={pathname?.includes('/members') ? styles.active : ''}
+          >
+            <span className={styles.icon}>👥</span>
+            <span>Members</span>
+          </Link>
+          <Link 
+            href="/tasks" 
+            className={pathname?.includes('/tasks') ? styles.active : ''}
+          >
+            <span className={styles.icon}>📝</span>
+            <span>Tasks</span>
+          </Link>
+          <Link 
+            href="/schedules" 
+            className={pathname?.includes('/schedules') ? styles.active : ''}
+          >
+            <span className={styles.icon}>📅</span>
+            <span>Schedules</span>
+          </Link>
+          <Link 
+            href="/analytics" 
+            className={pathname?.includes('/analytics') ? styles.active : ''}
+          >
+            <span className={styles.icon}>📊</span>
+            <span>Analytics</span>
+          </Link>
         </nav>
-        <div className="sidebar-footer">
-          <p>Welcome, {user.email}</p>
-          <LogoutButton />
+        <div className={styles.footer}>
+          <div className={styles.userInfo}>
+            <div className={styles.userName}>
+              {user?.email?.split('@')[0]}
+            </div>
+            <div className={styles.userEmail}>{user?.email}</div>
+          </div>
+          <button onClick={handleLogout} className={styles.logoutBtn}>
+            🚪 Logout
+          </button>
         </div>
       </aside>
-      <main className="dashboard-main">{children}</main>
+      <main className={styles.main}>
+        {children}
+      </main>
     </div>
   );
 }

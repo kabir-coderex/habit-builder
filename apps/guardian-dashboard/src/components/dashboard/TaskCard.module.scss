@@ -1,0 +1,107 @@
+.card {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  transition: all 0.2s;
+
+  &:hover {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  }
+}
+
+.image {
+  width: 100%;
+  height: 160px;
+  background: #f5f5f5;
+  overflow: hidden;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+}
+
+.content {
+  padding: 1.5rem;
+
+  h3 {
+    margin: 0 0 0.5rem 0;
+    font-size: 1.125rem;
+    color: #333;
+  }
+}
+
+.description {
+  margin: 0 0 1rem 0;
+  color: #666;
+  font-size: 0.875rem;
+  line-height: 1.4;
+}
+
+.meta {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  font-size: 0.875rem;
+}
+
+.points {
+  color: #ff9800;
+  font-weight: 600;
+}
+
+.voice {
+  color: #2196f3;
+  cursor: help;
+}
+
+.actions {
+  display: flex;
+  gap: 0.5rem;
+  padding: 0 1.5rem 1.5rem;
+
+  button {
+    flex: 1;
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.875rem;
+    font-weight: 500;
+    transition: all 0.2s;
+
+    &:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+  }
+}
+
+.btnSchedule {
+  background: #9c27b0;
+  color: white;
+
+  &:hover:not(:disabled) {
+    background: #7b1fa2;
+  }
+}
+
+.btnEdit {
+  background: #2196f3;
+  color: white;
+
+  &:hover:not(:disabled) {
+    background: #1976d2;
+  }
+}
+
+.btnDelete {
+  background: #f44336;
+  color: white;
+
+  &:hover:not(:disabled) {
+    background: #d32f2f;
+  }
+}

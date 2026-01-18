@@ -33,7 +33,8 @@ export default function TaskList({ tasks: initialTasks }: { tasks: ActiveTask[] 
     const announced = getAnnouncedTasks();
     tasks.forEach(task => {
       if (!announced.has(task.log_id)) {
-        const announcementText = `Time for ${task.task_name} for ${task.member_name}.`;
+        // Use custom voice text if available, otherwise use default
+        const announcementText = task.voice_text || `Time for ${task.task_name} for ${task.member_name}.`;
         console.log(`Announcing: ${announcementText}`);
         speak(announcementText, 'en-US').catch(err => console.error(err));
         setAnnouncedTask(task.log_id);

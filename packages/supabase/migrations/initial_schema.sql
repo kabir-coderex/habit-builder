@@ -27,6 +27,7 @@ CREATE TABLE public.members (
     name text NOT NULL,
     role public.member_role NOT NULL DEFAULT 'child',
     avatar_url text,
+    is_active boolean NOT NULL DEFAULT true,
     created_at timestamptz NOT NULL DEFAULT now()
 );
 COMMENT ON TABLE public.members IS 'Stores individual family members, linking guardians to auth users.';
@@ -50,6 +51,8 @@ CREATE TABLE public.tasks (
     name text NOT NULL,
     description text,
     points_value integer NOT NULL DEFAULT 10,
+    image_url text,
+    voice_text text,
     created_at timestamptz NOT NULL DEFAULT now()
 );
 COMMENT ON TABLE public.tasks IS 'Reusable tasks created and customized by a family.';
@@ -61,6 +64,7 @@ CREATE TABLE public.task_schedules (
     task_id uuid NOT NULL REFERENCES public.tasks(id) ON DELETE CASCADE,
     schedule_type public.schedule_type NOT NULL,
     scheduled_time time NOT NULL,
+    duration_minutes integer NOT NULL DEFAULT 60,
     -- For 'weekdays' type, array of integers [0=Sun, 1=Mon, ..., 6=Sat]
     weekdays integer[],
     -- For 'date' type
